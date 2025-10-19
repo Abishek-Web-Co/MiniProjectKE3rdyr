@@ -36,7 +36,7 @@ Follow these steps to get the application running on your local machine.
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/your-username/your-project-name.git](https://github.com/your-username/your-project-name.git)
+    git clone [https://github.com/Abishek-Web-Co/MiniProjectKE3rdyr](https://github.com/Abishek-Web-Co/MiniProjectKE3rdyr)
     cd your-project-name
     ```
 
