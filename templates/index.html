@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Doctor 🩺</title>
+    <style>
+        :root {
+            /* Updated "plant" color palette */
+            --primary-color: #22c55e; /* Green 500 */
+            --primary-hover: #16a34a; /* Green 600 */
+            --primary-light: #f0fdf4; /* Green 50 */
+            
+            --light-gray: #f7fafc;    /* Cool Gray 50 */
+            --border-color: #e5e7eb;  /* Cool Gray 200 */
+            --text-dark: #1f2937;      /* Cool Gray 800 */
+            --text-light: #6b7280;    /* Cool Gray 500 */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--light-gray);
+            /* Added a subtle gradient for depth */
+            background-image: linear-gradient(135deg, #ffffff 0%, var(--light-gray) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden; 
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            /* Enhanced shadow with a hint of the primary color */
+            box-shadow: 0 12px 28px rgba(34, 197, 94, 0.1), 0 4px 12px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 550px;
+            padding: 2.5rem;
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        #wizardForm {
+            overflow: hidden; 
+            position: relative;
+            min-height: 350px; 
+        }
+
+        /* Progress Bar with a gradient */
+        #progressBar {
+            position: absolute;
+            top: -2.5rem; 
+            left: 0;
+            height: 8px;
+            /* Gradient makes it look more dynamic */
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-hover));
+            width: 0%;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        h2 {
+            text-align: center;
+            /* Using the darker green for brand consistency */
+            color: var(--primary-hover);
+            margin-top: 0;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .step {
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            /* A slightly shorter, smoother transition */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(30px); /* Slides in from right */
+        }
+
+        .step.active {
+            opacity: 1;
+            visibility: visible;
+            position: relative; 
+            transform: translateX(0);
+        }
+
+        .step:not(.active) {
+            display: none;
+        }
+
+        .question-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .option {
+            display: block;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            /* Updated transition for a smoother feel */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        
+        /* Added a "lift" effect on hover */
+        .option:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+        }
+        
+        /* Updated "selected" style to use new colors */
+        .option.selected {
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 2px var(--primary-color);
+            background-color: var(--primary-light); /* Light green background */
+        }
+        
+        /* Hide the default radio button for a cleaner look */
+        .option input[type="radio"] {
+            display: none;
+        }
+        
+        .option label {
+            font-weight: 500;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+        
+        /* Style the label directly when its parent .option is selected */
+        .option.selected label {
+            color: var(--primary-hover);
+            font-weight: 600;
+        }
+
+        .button-container {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            padding: 0.85rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            /* Updated transition for hover effect */
+            transition: all 0.2s ease;
+        }
+        
+        /* Added hover "lift" to buttons */
+        .btn:hover {
+            transform: scale(1.03) translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: var(--text-light);
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn[style*="display: none"] {
+            display: none !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="progressBar"></div>
+        
+        <h2>🌱 Plant Doctor</h2>
+        
+        <form id="wizardForm" action="/diagnose" method="POST">
+            
+            <div class="step active" data-step="1">
+                <p class="question-title">Are the leaves turning yellow?</p>
+                <div class="option">
+                    <input type="radio" name="leaves_yellow" value="yes" id="q1_yes">
+                    <label for="q1_yes">Yes, some leaves are yellow.</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="leaves_yellow" value="no" id="q1_no" checked>
+                    <label for="q1_no">No, they look fine.</label>
+                </div>
+            </div>
+
+            <div class="step" data-step="2">
+                <p class="question-title">What is the soil moisture?</p>
+                <div class="option">
+                    <input type="radio" name="soil_moisture" value="wet" id="q2_wet">
+                    <label for="q2_wet">Wet and soggy</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="soil_moisture" value="dry" id="q2_dry">
+                    <label for="q2_dry">Bone-dry</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="soil_moisture" value="normal" id="q2_normal" checked>
+                    <label for="q2_normal">Normal (just damp)</label>
+                </div>
+            </div>
+            
+            <div class="step" data-step="3">
+                <p class="question-title">Does the plant have brown, dry spots?</p>
+                <div class="option">
+                    <input type="radio" name="brown_spots" value="yes" id="q3_yes">
+                    <label for="q3_yes">Yes, there are brown spots.</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="brown_spots" value="no" id="q3_no" checked>
+                    <label for="q3_no">No, no spots.</label>
+                </div>
+            </div>
+
+            <div class="step" data-step="4">
+                <p class="question-title">Is the plant in direct, hot sunlight?</p>
+                <div class="option"> 
+                    <input type="radio" name="direct_sun" value="yes" id="q4_yes">
+                    <label for="q4_yes">Yes, it gets direct sun for hours.</label>
+                </div>
+                <div class="option">
+                    <input type="radio" name="direct_sun" value="no" id="q4_no" checked>
+                    <label for="q4_no">No, it's in indirect light.</label>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button type="button" class="btn btn-secondary" id="prevBtn">Back</button>
+                <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn" style="display: none;">Get Diagnosis</button>
+            </div>
+            
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('wizardForm');
+            const steps = Array.from(form.querySelectorAll('.step'));
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const progressBar = document.getElementById('progressBar');
+
+            let currentStep = 0;
+            const totalSteps = steps.length;
+
+            // Function to update button visibility and progress bar
+            function updateUI() {
+                // Show/hide steps
+                steps.forEach((step, index) => {
+                    step.classList.toggle('active', index === currentStep);
+                });
+
+                // Update progress bar
+                progressBar.style.width = `${((currentStep) / (totalSteps - 1)) * 100}%`;
+
+                // Update button visibility
+                prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-block';
+                submitBtn.style.display = currentStep === totalSteps - 1 ? 'inline-block' : 'none';
+                nextBtn.style.display = currentStep === totalSteps - 1 ? 'none' : 'inline-block';
+            }
+            
+            // "Next" button click
+            nextBtn.addEventListener('click', () => {
+                if (currentStep < totalSteps - 1) {
+                    currentStep++;
+                    updateUI();
+                }
+            });
+
+            // "Back" button click
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    updateUI();
+                }
+            });
+
+            // Add click listener to options to give "selected" style
+            form.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    // Find the radio button inside and check it
+                    const radio = option.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+                        
+                        // Remove 'selected' from siblings
+                        const parentStep = option.closest('.step');
+                        parentStep.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                        
+                        // Add 'selected' to this one
+                        option.classList.add('selected');
+                    }
+                });
+            });
+
+            // Call on load to set the initial state
+            updateUI();
+        });
+    </script>
+
+</body>
+</html>
