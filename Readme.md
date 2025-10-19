@@ -2,10 +2,6 @@
 
 Plant Doctor is a simple, modern web application built with Flask that helps users diagnose common houseplant problems. It uses a multi-step "wizard" questionnaire to gather symptoms and provides a diagnosis, solution, and reasoning based on a simple expert system.
 
-![Plant Doctor Questionnaire](httpsAfter-you-upload-a-screenshot-put-its-link-here.png)
-![Plant Doctor Diagnosis](After-you-upload-a-screenshot-put-its-link-here-2.png)
-*(**Note:** Replace the image links above with screenshots of your actual application!)*
-
 ---
 
 ## ✨ Features
