@@ -75,3 +75,9 @@ With your virtual environment still active, run the Flask app:
 
 ```bash
 python app.py
+
+```
+### Credits 
+
+Please give credit to the original author Xe54z and his GitHub repository https://github.com/Abishek-Web-Co/MiniProjectKE3rdyr for creating the Plant Doctor application. If you use or modify any part of this code in your own projects, please include proper attribution back to him.
+
